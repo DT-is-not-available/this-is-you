@@ -56,6 +56,9 @@
 		.touchbutton.short {
 			height: min(10vh, 6vw);
 		}
+		.touchbutton.wide {
+			width: min(55vh, 33vw);
+		}
 		#touchcontrols {
 			position: fixed;
 			left: 0px;
@@ -168,9 +171,10 @@
 	<div id="touchcontrols">
 		<div class="touchbutton" data-action="ArrowLeft" style="left: min(10vh, 6vw); bottom: min(10vh, 6vw);">Left</div>
 		<div class="touchbutton" data-action="ArrowRight" style="left: min(40vh, 24vw); bottom: min(10vh, 6vw);">Right</div>
-		<div class="touchbutton" data-action="Space" style="right: min(10vh, 6vw); bottom: min(10vh, 6vw);">Jump</div>
-		<div class="touchbutton short" data-action="ArrowUp" style="right: min(40vh, 24vw); bottom: min(25vh, 15vw);">Up</div>
-		<div class="touchbutton short" data-action="ArrowDown" style="right: min(40vh, 24vw); bottom: min(10vh, 6vw);">Down</div>
+		<div class="touchbutton wide" data-action="Space" style="right: min(10vh, 6vw); bottom: min(10vh, 6vw);">Jump</div>
+		<div class="touchbutton short" data-action="ArrowUp" style="right: min(40vh, 24vw); bottom: min(40vh, 24vw);">Up</div>
+		<div class="touchbutton short" data-action="ArrowDown" style="right: min(10vh, 6vw); bottom: min(40vh, 24vw);">Down</div>
+		<div class="touchbutton short" data-action="Escape" style="right: min(10vh, 6vw); top: min(10vh, 6vw);">Pause</div>
 	</div>
 </body> 
 </html> 

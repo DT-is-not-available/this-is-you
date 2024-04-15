@@ -66,6 +66,66 @@ function resetEffects() {
 	c2.layers.World.effect_params[5][2] = 1 // 0.9
 }
 
+function onkey(code) {
+	const settings = c2.vars.settings
+	if (!c2.layers.World.visible || c2.objects.Player.Inactive) return
+	if (code == "Escape" || (code == "Space" && c2.vars.pausedOption == 0 && c2.vars.Paused)) {
+		c2.vars.pausedOption = 0
+		if (c2.vars.Paused) {
+			if (settings.music) Audio.SetVolume("music", 0)
+			c2.vars.Paused = false
+			c2.layers.PauseScreen.visible = false
+			for (let i = 0; i < c2.objects.iterables.length; i++) {
+				c2.as(c2.objects.iterables[i], c2.objects.iterables[i].onUnpause || (_=>0))
+			}
+		} else {
+			if (settings.music) Audio.SetVolume("music", -10)
+			c2.vars.Paused = true
+			c2.layers.PauseScreen.visible = true
+			for (let i = 0; i < c2.objects.iterables.length; i++) {
+				c2.as(c2.objects.iterables[i], c2.objects.iterables[i].onPause || (_=>0))
+			}
+		}
+	}
+	if (!c2.vars.Paused) return
+	if (code == "KeyW" || code == "ArrowUp") {
+		if (c2.vars.pausedOption > 4) c2.vars.pausedOption = 4
+		if (c2.vars.Paused) c2.vars.pausedOption --
+		if (c2.vars.pausedOption < 0) c2.vars.pausedOption = 0
+	}
+	if (code == "KeyS" || code == "ArrowDown") {
+		if (c2.vars.Paused) c2.vars.pausedOption ++
+		if (c2.vars.pausedOption > 4) c2.vars.pausedOption = 4
+	}
+	if (code == "KeyA" || code == "ArrowLeft") {
+		if (c2.vars.Paused && c2.vars.pausedOption > 4) c2.vars.pausedOption --
+		if (c2.vars.pausedOption < 0) c2.vars.pausedOption = 0
+	}
+	if (code == "KeyD" || code == "ArrowRight") {
+		if (c2.vars.Paused && c2.vars.pausedOption >= 4) c2.vars.pausedOption ++
+		if (c2.vars.pausedOption > 5) c2.vars.pausedOption = 5
+	}
+	if (code == "Space") {
+		if (c2.vars.pausedOption == 1) {
+			settings.music = !settings.music
+			if (settings.music) Audio.SetVolume("music", -10)
+			else Audio.SetVolume("music", -100)
+		}
+		if (c2.vars.pausedOption == 2) settings.sfx = !settings.sfx
+		if (c2.vars.pausedOption == 3 && confirm("Are you 100% sure you want to reset ALL progress")) {
+			settings.checkpoint = -1
+			settings.fragments = [false, false, false, false, false]
+			settings.time = 0
+			settings.deaths = 0
+			localStorage["insertgames:this_is_you"] = JSON.stringify(c2.vars.settings)
+			window.location.reload()
+		}
+		if (c2.vars.pausedOption != 3) save()
+		if (c2.vars.pausedOption == 4) window.open("https://discord.gg/X3bPan9U4G")
+		if (c2.vars.pausedOption == 5) window.open("https://www.youtube.com/channel/UC_N0MiNEsCretIVZV_xuThg")
+	}
+}
+
 c2.events.LayoutStart.push(function() {
 	resetEffects()
 	c2.vars.CameraX = 0
@@ -81,64 +141,6 @@ c2.events.LayoutStart.push(function() {
 	c2.vars.Paused = false
 	c2.vars.pausedOption = 0
 	const settings = c2.vars.settings
-	document.addEventListener("keydown", function(event) {
-		if (!c2.layers.World.visible || c2.objects.Player.Inactive) return
-		if (event.code == "Escape" || (event.code == "Space" && c2.vars.pausedOption == 0 && c2.vars.Paused)) {
-			c2.vars.pausedOption = 0
-			if (c2.vars.Paused) {
-				if (settings.music) Audio.SetVolume("music", 0)
-				c2.vars.Paused = false
-				c2.layers.PauseScreen.visible = false
-				for (let i = 0; i < c2.objects.iterables.length; i++) {
-					c2.as(c2.objects.iterables[i], c2.objects.iterables[i].onUnpause || (_=>0))
-				}
-			} else {
-				if (settings.music) Audio.SetVolume("music", -10)
-				c2.vars.Paused = true
-				c2.layers.PauseScreen.visible = true
-				for (let i = 0; i < c2.objects.iterables.length; i++) {
-					c2.as(c2.objects.iterables[i], c2.objects.iterables[i].onPause || (_=>0))
-				}
-			}
-		}
-		if (!c2.vars.Paused) return
-		if (event.code == "KeyW" || event.code == "ArrowUp") {
-			if (c2.vars.pausedOption > 4) c2.vars.pausedOption = 4
-			if (c2.vars.Paused) c2.vars.pausedOption --
-			if (c2.vars.pausedOption < 0) c2.vars.pausedOption = 0
-		}
-		if (event.code == "KeyS" || event.code == "ArrowDown") {
-			if (c2.vars.Paused) c2.vars.pausedOption ++
-			if (c2.vars.pausedOption > 4) c2.vars.pausedOption = 4
-		}
-		if (event.code == "KeyA" || event.code == "ArrowLeft") {
-			if (c2.vars.Paused && c2.vars.pausedOption > 4) c2.vars.pausedOption --
-			if (c2.vars.pausedOption < 0) c2.vars.pausedOption = 0
-		}
-		if (event.code == "KeyD" || event.code == "ArrowRight") {
-			if (c2.vars.Paused && c2.vars.pausedOption >= 4) c2.vars.pausedOption ++
-			if (c2.vars.pausedOption > 5) c2.vars.pausedOption = 5
-		}
-		if (event.code == "Space") {
-			if (c2.vars.pausedOption == 1) {
-				settings.music = !settings.music
-				if (settings.music) Audio.SetVolume("music", -10)
-				else Audio.SetVolume("music", -100)
-			}
-			if (c2.vars.pausedOption == 2) settings.sfx = !settings.sfx
-			if (c2.vars.pausedOption == 3 && confirm("Are you 100% sure you want to reset ALL progress")) {
-				settings.checkpoint = -1
-				settings.fragments = [false, false, false, false, false]
-				settings.time = 0
-				settings.deaths = 0
-				localStorage["insertgames:this_is_you"] = JSON.stringify(c2.vars.settings)
-				window.location.reload()
-			}
-			if (c2.vars.pausedOption != 3) save()
-			if (c2.vars.pausedOption == 4) window.open("https://discord.gg/X3bPan9U4G")
-			if (c2.vars.pausedOption == 5) window.open("https://www.youtube.com/channel/UC_N0MiNEsCretIVZV_xuThg")
-		}
-	})
 	c2.objects.iterables = []
 	c2.forEachObject(c2.scripts.obj_start)
 	for (let i = 0; i < c2.objects.iterables.length; i++) {
@@ -147,6 +149,8 @@ c2.events.LayoutStart.push(function() {
 	scrollX = c2.vars.CameraX
 	scrollY = c2.vars.CameraY
 })
+
+c2.events.KeyDown.push(onkey)
 
 let prevtime = Date.now()
 function tick() {

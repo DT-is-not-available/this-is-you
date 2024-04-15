@@ -402,6 +402,8 @@ c2.Keyboard = {}
 
 document.addEventListener("keydown", function(e){
 	c2.Keyboard[e.code] = true
+	document.getElementById("touchcontrols").style.display = "none"
+	c2.events.KeyDown.emit(e.code)
 })
 document.addEventListener("keyup", function(e){
 	c2.Keyboard[e.code] = false
@@ -426,10 +428,9 @@ function updateTouches(e) {
 			) c2.Keyboard[button.dataset.action] = true
 			neww = c2.Keyboard[button.dataset.action]
 			if (old && !neww) {
-				Keyboard.onKeyUp(e)
 			}
 			if (!old && neww) {
-				Keyboard.onKeyDown(e)
+				c2.events.KeyDown.emit(button.dataset.action)
 			}
 		}
 	}
@@ -451,10 +452,9 @@ function stopTouches(e) {
 			) c2.Keyboard[button.dataset.action] = false
 			neww = c2.Keyboard[button.dataset.action]
 			if (old && !neww) {
-				Keyboard.onKeyUp(e)
 			}
 			if (!old && neww) {
-				Keyboard.onKeyDown(e)
+				c2.events.KeyDown.emit(button.dataset.action)
 			}
 		}
 	}
@@ -465,15 +465,22 @@ const Keyboard = Object.values(runtime.objectsByUid).find(e=>e.type.name=="Keybo
 document.addEventListener("touchmove", updateTouches)
 document.addEventListener("touchend", stopTouches)
 document.addEventListener("touchcancel", stopTouches)
+document.addEventListener("touchstart", function() {
+	document.getElementById("touchcontrols").style.display = "block"
+})
+
+for (const el of document.getElementsByClassName("touchbutton")) {
+	el.addEventListener("touchstart", e=>{
+		if (!c2.Keyboard[el.dataset.action]) {
+			c2.events.KeyDown.emit(el.dataset.action)
+		}
+		c2.Keyboard[el.dataset.action] = true
+		e.preventDefault()
+	})
+}
 
 if (isTouchDevice()) {
 	document.getElementById("touchcontrols").style.display = "block"
-	for (const el of document.getElementsByClassName("touchbutton")) {
-		el.addEventListener("touchstart", e=>{
-			if (!c2.Keyboard[el.dataset.action]) Keyboard.onKeyDown(e)
-			c2.Keyboard[el.dataset.action] = true
-		})
-	}
 }
 
 c2.loadingText = c2toFunc("setLoadingText")
@@ -524,9 +531,9 @@ for (const [k, v] of Object.entries(cr.behaviors)) {
 }
 c2.objects = objects
 class c2_Event extends Array {
-	emit() {
+	emit(...args) {
 		for (let i = 0; i < this.length; i++) {
-			this[i]()
+			this[i](...args)
 		}
 	}
 }
@@ -534,6 +541,7 @@ c2.events = {
 	LayoutStart: new c2_Event,
 	LayoutEnd: new c2_Event,
 	Tick: new c2_Event,
+	KeyDown: new c2_Event,
 }
 window.c2_exposed = {}
 window.c2_exposed.Tick = ()=>c2.events.Tick.emit()
