@@ -410,7 +410,7 @@ document.addEventListener("keyup", function(e){
 const mobileButtonList = document.getElementsByClassName("touchbutton")
 
 function updateTouches(e) {
-	const {touches} = e
+	const touches = e.touches
 	for (const button of document.getElementsByClassName("touchbutton")) {
 		const old = c2.Keyboard[button.dataset.action]
 		c2.Keyboard[button.dataset.action] = false
