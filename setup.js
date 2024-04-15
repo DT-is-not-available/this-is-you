@@ -411,17 +411,20 @@ const mobileButtonList = document.getElementsByClassName("touchbutton")
 
 function updateTouches(e) {
 	const {touches} = e
-	for (let i = 0; i < touches.length; i++) {
-		const touch = touches[i]
-		for (const button of document.getElementsByClassName("touchbutton")) {
+	for (const button of document.getElementsByClassName("touchbutton")) {
+		const old = c2.Keyboard[button.dataset.action]
+		c2.Keyboard[button.dataset.action] = false
+		for (let i = 0; i < touches.length; i++) {
+			const touch = touches[i]
 			const {top, left, width, height} = button.getBoundingClientRect()
-			const old = c2.Keyboard[button.dataset.action]
-			const neww = c2.Keyboard[button.dataset.action] = (
+			let neww = old
+			if (
 				(touch.clientX < left + width) &&
 				(touch.clientY < top + height) &&
 				touch.clientX > left &&
 				touch.clientY > top
-			)
+			) c2.Keyboard[button.dataset.action] = true
+			neww = c2.Keyboard[button.dataset.action]
 			if (old && !neww) {
 				Keyboard.onKeyUp(e)
 			}
