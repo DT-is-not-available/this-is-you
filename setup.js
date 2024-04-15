@@ -407,6 +407,36 @@ document.addEventListener("keyup", function(e){
 	c2.Keyboard[e.code] = false
 })
 
+const mobileButtonList = document.getElementsByClassName("touchbutton")
+
+function updateTouches({touches}) {
+	for (let i = 0; i < touches.length; i++) {
+		const touch = touches[i]
+		for (const button of document.getElementsByClassName("touchbutton")) {
+			const {top, left, width, height} = button.getBoundingClientRect()
+			c2.Keyboard[button.dataset.action] = (
+				(touch.clientX < left + width) &&
+				(touch.clientY < top + height) &&
+				touch.clientX > left &&
+				touch.clientY > top
+			)
+			console.log(touch, button)
+		}
+	}
+}
+document.addEventListener("touchmove", updateTouches)
+document.addEventListener("touchend", updateTouches)
+document.addEventListener("touchcancel", updateTouches)
+
+if (isTouchDevice() || location.host == "localhost") {
+	document.getElementById("touchcontrols").style.display = "block"
+	for (const el of document.getElementsByClassName("touchbutton")) {
+		el.addEventListener("touchstart", e=>{
+			c2.Keyboard[el.dataset.action] = true
+		})
+	}
+}
+
 c2.loadingText = c2toFunc("setLoadingText")
 c2.finishLoading = c2toFunc("finishLoading")
 c2.loadingBar = c2toFunc("setLoadingBar")

@@ -32,10 +32,38 @@
 			touch-action: none;
 			-ms-touch-action: none;
 		}
-		canvas {
+		canvas, #touchcontrols, .touchbutton {
 			touch-action-delay: none;
 			touch-action: none;
 			-ms-touch-action: none;
+		}
+		.touchbutton {
+			width: 25vh;
+			height: 25vh;
+			background: #0007;
+			color: #fff;
+			font-weight: bold;
+			font-size: 5vh;
+			position: absolute;
+			pointer-events: all;
+			outline: 1vh solid white;
+			font-family: system-ui;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			user-select: none;
+		}
+		.touchbutton.short {
+			height: 10vh;
+		}
+		#touchcontrols {
+			position: fixed;
+			left: 0px;
+			right: 0px;
+			top: 0px;
+			bottom: 0px;
+			pointer-events: none;
+			display: none;
 		}
     </style>
 	
@@ -131,6 +159,18 @@
 				OnRegisterSWError(e);
 			}
 		};
+		function isTouchDevice() {
+			return (('ontouchstart' in window) ||
+				(navigator.maxTouchPoints > 0) ||
+				(navigator.msMaxTouchPoints > 0));
+		}
     </script>
+	<div id="touchcontrols">
+		<div class="touchbutton" data-action="ArrowLeft" style="left: 10vh; bottom: 10vh;">Left</div>
+		<div class="touchbutton" data-action="ArrowRight" style="left: 40vh; bottom: 10vh;">Right</div>
+		<div class="touchbutton" data-action="Space" style="right: 10vh; bottom: 10vh;">Jump</div>
+		<div class="touchbutton short" data-action="ArrowDown" style="right: 40vh; bottom: 25vh;">Up</div>
+		<div class="touchbutton short" data-action="ArrowDown" style="right: 40vh; bottom: 10vh;">Down</div>
+	</div>
 </body> 
 </html> 
