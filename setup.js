@@ -435,9 +435,36 @@ function updateTouches(e) {
 	}
 }
 
+function stopTouches(e) {
+	const touches = e.changedTouches
+	for (const button of document.getElementsByClassName("touchbutton")) {
+		const old = c2.Keyboard[button.dataset.action]
+		for (let i = 0; i < touches.length; i++) {
+			const touch = touches[i]
+			const {top, left, width, height} = button.getBoundingClientRect()
+			let neww = old
+			if (
+				(touch.clientX < left + width) &&
+				(touch.clientY < top + height) &&
+				touch.clientX > left &&
+				touch.clientY > top
+			) c2.Keyboard[button.dataset.action] = false
+			neww = c2.Keyboard[button.dataset.action]
+			if (old && !neww) {
+				Keyboard.onKeyUp(e)
+			}
+			if (!old && neww) {
+				Keyboard.onKeyDown(e)
+			}
+		}
+	}
+}
+
 const Keyboard = Object.values(runtime.objectsByUid).find(e=>e.type.name=="Keyboard")
 
 document.addEventListener("touchmove", updateTouches)
+document.addEventListener("touchend", stopTouches)
+document.addEventListener("touchcancel", stopTouches)
 
 if (isTouchDevice()) {
 	document.getElementById("touchcontrols").style.display = "block"
@@ -445,14 +472,6 @@ if (isTouchDevice()) {
 		el.addEventListener("touchstart", e=>{
 			if (!c2.Keyboard[el.dataset.action]) Keyboard.onKeyDown(e)
 			c2.Keyboard[el.dataset.action] = true
-		})
-		el.addEventListener("touchend", e=>{
-			if (c2.Keyboard[el.dataset.action]) Keyboard.onKeyUp(e)
-			c2.Keyboard[el.dataset.action] = false
-		})
-		el.addEventListener("touchcancel", e=>{
-			if (c2.Keyboard[el.dataset.action]) Keyboard.onKeyUp(e)
-			c2.Keyboard[el.dataset.action] = false
 		})
 	}
 }
